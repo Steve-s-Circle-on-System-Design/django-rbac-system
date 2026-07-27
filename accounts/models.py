@@ -1,43 +1,45 @@
+import uuid
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
+class RoleOptions(models.TextChoices):
+        USER = 'USER', 'User'
+        ADMIN = 'ADMIN', 'Admin'
+        MODERATOR = 'MODERATOR', 'Moderator'
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
-    id = models.UUIDField()
-    email = models.EmailField(unique=True)
-    username = models.EmailField(max_length=50)
+class StatusOptions(models.TextChoices):
+        ACTIVE = 'ACTIVE', 'Active',
+        INACTIVE = 'INACTIVE', 'Inactive',
+        SUSPENDED = 'SUSPENDED', 'Suspended',
+        PENDING_VERIFICATION = 'PENDING_VERIFICATION', 'Pending_verification'
+
+class ProviderOptions(models.TextChoices):
+        LOCAL = 'LOCAL', 'Local',
+        GOOGLE = 'GOOGLE', 'Google',
+        GITHUB = 'GITHUB', 'Github'
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    email = models.EmailField(unique=True, max_length=50)
+    name = models.CharField(max_length=50)
     email_verified_at = models.DateTimeField(null=True, blank=True)
     profile_picture = models.ImageField(
         upload_to='profile_pics/',
         null=True,
         blank=True
     )
-    class RoleOptions(models.TextChoices):
-        USER = 'USER', 'User'
-        ADMIN = 'ADMIN', 'Admin'
-        MODERATOR = 'MODERATOR', 'Moderator'
-
     role = models.CharField(
         max_length=15,
         choices=RoleOptions.choices,
         default=RoleOptions.USER
     )
-    class StatusOptions(models.TextChoices):
-        ACTIVE = 'ACTIVE', 'Active',
-        INACTIVE = 'INACTIVE', 'Inactive',
-        SUSPENDED = 'SUSPENDED', 'Suspended',
-        PENDING_VERIFICATION = 'PENDING_VERIFICATION', 'Pending_verification'
-
     status = models.CharField(
         max_length=30,
         choices=StatusOptions.choices,
         default=StatusOptions.INACTIVE
     )
-    class ProviderOptions(models.TextChoices):
-        LOCAL = 'LOCAL', 'Local',
-        GOOGLE = 'GOOGLE', 'Google',
-        GITHUB = 'GITHUB', 'Github'
-
     provider = models.CharField(
         max_length=30,
         choices=ProviderOptions.choices,
@@ -50,7 +52,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     locked_until = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["name"]
 
-
-    def __str__(self):
-        return self.username
+def __str__(self):
+        return self.email
