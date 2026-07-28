@@ -1,23 +1,26 @@
 import uuid
 
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+
 
 class RoleOptions(models.TextChoices):
-        USER = 'USER', 'User'
-        ADMIN = 'ADMIN', 'Admin'
-        MODERATOR = 'MODERATOR', 'Moderator'
+    USER = 'USER', 'User'
+    ADMIN = 'ADMIN', 'Admin'
+    MODERATOR = 'MODERATOR', 'Moderator'
+
 
 class StatusOptions(models.TextChoices):
-        ACTIVE = 'ACTIVE', 'Active',
-        INACTIVE = 'INACTIVE', 'Inactive',
-        SUSPENDED = 'SUSPENDED', 'Suspended',
-        PENDING_VERIFICATION = 'PENDING_VERIFICATION', 'Pending_verification'
+    ACTIVE = 'ACTIVE', 'Active',
+    INACTIVE = 'INACTIVE', 'Inactive',
+    SUSPENDED = 'SUSPENDED', 'Suspended',
+    PENDING_VERIFICATION = 'PENDING_VERIFICATION', 'Pending_verification'
+
 
 class ProviderOptions(models.TextChoices):
-        LOCAL = 'LOCAL', 'Local',
-        GOOGLE = 'GOOGLE', 'Google',
-        GITHUB = 'GITHUB', 'Github'
+    LOCAL = 'LOCAL', 'Local',
+    GOOGLE = 'GOOGLE', 'Google',
+    GITHUB = 'GITHUB', 'Github'
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -45,7 +48,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         choices=ProviderOptions.choices,
         default=ProviderOptions.LOCAL
     )
-    provider_id = models.CharField(max_length=100, null=True, blank=True, db_index=True)
+    provider_id = models.CharField(
+        max_length=100, null=True, blank=True, db_index=True)
     last_login_at = models.DateTimeField(null=True, )
     last_login_ip = models.GenericIPAddressField(null=True, blank=True)
     login_attempts = models.IntegerField(default=0)
@@ -55,5 +59,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name"]
 
+
 def __str__(self):
-        return self.email
+    return self.email
