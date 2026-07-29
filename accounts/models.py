@@ -22,6 +22,11 @@ class ProviderOptions(models.TextChoices):
     GOOGLE = 'GOOGLE', 'Google',
     GITHUB = 'GITHUB', 'Github'
 
+class OTPStatus(models.TextChoices):
+    PENDING = 'PENDING', 'Pending'
+    USED = 'USED', 'Used'
+    EXPIRED = 'EXPIRED', 'Expired'
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -86,3 +91,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+class OTPVerification(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=10)
+    email = models.EmailField(max_length=100)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    otpstatus = models.CharField(choices=OTPStatus.choices, default=OTPStatus.PENDING)
