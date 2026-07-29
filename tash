@@ -1,0 +1,38 @@
+[1mdiff --git a/.env.example b/.env.example[m
+[1mindex e69de29..b95f171 100644[m
+[1m--- a/.env.example[m
+[1m+++ b/.env.example[m
+[36m@@ -0,0 +1,2 @@[m
+[32m+[m[32mSECRET_KEY=SECRET_KEY[m
+[32m+[m[32mDEBUG=True[m
+\ No newline at end of file[m
+[1mdiff --git a/config/settings.py b/config/settings.py[m
+[1mindex 3e94e14..b24cf63 100644[m
+[1m--- a/config/settings.py[m
+[1m+++ b/config/settings.py[m
+[36m@@ -10,11 +10,18 @@[m [mFor the full list of settings and their values, see[m
+ https://docs.djangoproject.com/en/6.0/ref/settings/[m
+ """[m
+ [m
+[32m+[m[32mimport os[m
+ from pathlib import Path[m
+ [m
+[32m+[m[32mimport environ[m
+[32m+[m
+ # Build paths inside the project like this: BASE_DIR / 'subdir'.[m
+ BASE_DIR = Path(__file__).resolve().parent.parent[m
+[32m+[m[32menv = environ.Env([m
+[32m+[m[32m    DEBUG=(bool, False)[m
+[32m+[m[32m)[m
+ [m
+[32m+[m[32menviron.Env.read_env(os.path.join(BASE_DIR, '.env'))[m
+ [m
+ # Quick-start development settings - unsuitable for production[m
+ # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/[m
+[1mdiff --git a/django-rbac-system b/django-rbac-system[m
+[1mnew file mode 160000[m
+[1mindex 0000000..5ba968c[m
+[1m--- /dev/null[m
+[1m+++ b/django-rbac-system[m
+[36m@@ -0,0 +1 @@[m
+[32m+[m[32mSubproject commit 5ba968cba742fa6dd67af8bf72c5ae51b4e4aba7[m
