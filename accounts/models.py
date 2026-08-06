@@ -134,3 +134,18 @@ class EmailLog(models.Model):
     def __str__(self):
         return f"{self.user_id} | {self.subject} | {self.status}"
 
+
+class AuditLog(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='audit_logs')
+    action = models.CharField(max_length=100)
+    resource = models.CharField(max_length=100)
+    resource_id = models.CharField(max_length=36)
+    ip_address = models.CharField(max_length=45)
+    user_agent = models.CharField(max_length=255)
+    details = models.JSONField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user_id} | {self.action}"
+
