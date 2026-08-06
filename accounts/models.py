@@ -160,3 +160,15 @@ class AuditLog(models.Model):
         return f"{self.user_id} | {self.action}"
 
 
+class File(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='files')
+    file_name = models.CharField(max_length=255)
+    file_size = models.IntegerField()
+    mime_type = models.CharField(max_length=100)
+    cloudinary_public_id = models.CharField(max_length=255)
+    secure_url = models.CharField(max_length=500)
+    format = models.CharField(max_length=50)
+    width = models.IntegerField()
+    height = models.IntegerField()
+    uploaded_at = models.DateTimeField(auto_now_add=True)
