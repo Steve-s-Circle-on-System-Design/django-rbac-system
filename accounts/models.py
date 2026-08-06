@@ -172,3 +172,33 @@ class File(models.Model):
     width = models.IntegerField()
     height = models.IntegerField()
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+
+class RefreshToken(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    token = models.CharField(max_length=255, unique=True) # this value should behashed
+    token_family = models.CharField(max_length=255)
+    rotated_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='rotated_tokens')
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='refresh_tokens')
+    expires_at = models.DateTimeField()
+    revoked_at = models.DateTimeField(null=True, blank=True)
+    revoked_reason = models.CharField(max_length=255, null=True, blank=True)
+    user_agent = models.CharField(max_length=255)
+    ip_address = models.GenericIPAddressField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user_id} | {self.token}"
+    
+    class Meta:
+        db_table = "refresh_tokens"
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["user"]),
+            models.Index(fields=["expires_at"]),
+            models.Index(fields=["token_family"]),
+        ]
+
+    @property
+    def is_revoked(self):
+        return self.revoked_at is not None
