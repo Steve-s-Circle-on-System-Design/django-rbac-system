@@ -1,7 +1,6 @@
-import uuid
-
-from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.db import models
+import uuid
 
 
 class RoleOptions(models.TextChoices):
@@ -21,6 +20,7 @@ class ProviderOptions(models.TextChoices):
     LOCAL = 'LOCAL', 'Local',
     GOOGLE = 'GOOGLE', 'Google',
     GITHUB = 'GITHUB', 'Github'
+
 
 class OTPStatus(models.TextChoices):
     PENDING = 'PENDING', 'Pending'
@@ -92,6 +92,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+
 class OTPVerification(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=10)
@@ -101,3 +102,35 @@ class OTPVerification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     otpstatus = models.CharField(choices=OTPStatus.choices, default=OTPStatus.PENDING)
+
+    
+class EmailLog(models.Model):
+    class EmailStatus(models.TextChoices):
+        PENDING = "pending", "Pending"
+        SENT = "sent", "Sent"
+        DELIVERED = "delivered", "Delivered"
+        OPENED = "opened", "Opened"
+        CLICKED = "clicked", "Clicked"
+        FAILED = "failed", "Failed"
+        
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="email_logs", null=True, blank=True)
+    recipient = models.CharField(max_length=255)
+    subject = models.CharField(max_length=255)
+    type = models.CharField(max_length=50)
+    status = models.CharField(max_length=10, choices=EmailStatus.choices, default=EmailStatus.PENDING)
+    message_id = models.CharField(max_length=255)
+    error = models.TextField(blank=True, null=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+    delivered_at = models.DateTimeField(null=True, blank=True)
+    opened_at = models.DateTimeField(null=True, blank=True)
+    clicked_at = models.DateTimeField(null=True, blank=True)
+    metadata = models.JSONField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user_id} | {self.subject} | {self.status}"
+
