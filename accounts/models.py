@@ -103,6 +103,16 @@ class OTPVerification(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     otpstatus = models.CharField(choices=OTPStatus.choices, default=OTPStatus.PENDING)
 
+
+class PasswordReset(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    token = models.CharField(max_length=255, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='password_reset_tokens')
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     
 class EmailLog(models.Model):
     class EmailStatus(models.TextChoices):
